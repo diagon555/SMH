@@ -24,7 +24,6 @@ SMHClass::SMHClass()
 void SMHClass::set_logfile_path(String path)
 {
 	logfile_path = path;
-	Serial.println(schedulers.count());
 }
 
 
