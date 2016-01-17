@@ -1,3 +1,4 @@
+#include "SMH.h"
 #include "Commands.h"
 
 Commands::Commands()
@@ -62,6 +63,8 @@ void Commands::check_serial()
 					digitalWrite(13, HIGH);
 				} else if(buff_serial == "led off") {
 					digitalWrite(13, LOW);
+				} else if(buff_serial == "tempsensors list") {
+					Serial.println(SMH.tempsensors->list());
 				} else if(buff_serial == "ms") {
 					Serial.println(millis());
 				} else {

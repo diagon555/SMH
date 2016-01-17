@@ -27,6 +27,7 @@
 
 #include "Schedule.h"
 #include "Commands.h"
+#include "TempSensors.h"
 
 class SMHClass
 {
@@ -36,10 +37,13 @@ private:
 	Commands * commands;
 	Schedulers * schedulers;
 public:
-  SMHClass();
-  void set_logfile_path(String);
-  void set_printer(Print &);
-  void loop(void);
+	SMHClass();
+
+ 	TempSensors * tempsensors;
+
+	void set_logfile_path(String);
+	void set_printer(Print &);
+	void loop(void);
 };
 
 extern SMHClass SMH;

@@ -14,6 +14,8 @@ SMHClass::SMHClass()
 {
 	schedulers = new Schedulers();
 	commands = new Commands();
+	tempsensors = new TempSensors();
+	
 	
 	//schedulers.add(&TempSensors::read_temp, 1000, 5000);
 	//schedulers.add(&TempSensors::read_temp1, 2000);
