@@ -23,18 +23,18 @@
 #define SMH_h
 
 #include <Arduino.h>
-#include <Schedule.h>
+#include <String.h>
+
+#include "Schedule.h"
+#include "Commands.h"
 
 class SMHClass
 {
 private:
 	String logfile_path;
 	Print * printer;
-	
-	String buff;
-	boolean started;
-	
-	Schedulers schedulers;
+	Commands * commands;
+	Schedulers * schedulers;
 public:
   SMHClass();
   void set_logfile_path(String);

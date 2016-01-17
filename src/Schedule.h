@@ -17,6 +17,7 @@ public:
 
 class Schedulers: public List<Scheduler*>
 {
+	int test;
 	boolean millis_over;
 	unsigned long pre_millis;
 public:
