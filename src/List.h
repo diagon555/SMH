@@ -67,6 +67,7 @@ class List {
     // get an item from the queue.
     T peek () const;
 
+	void remove(int);
     // check if the queue is empty.
     bool isEmpty () const;
 
@@ -183,6 +184,40 @@ T List<T>::peek () const {
 
   // return the item of the head node.
   return head->item;
+}
+
+template<typename T>
+void List<T>::remove (int index) {
+	link t;
+	if(count() == 0) return;
+	if(index == 0)
+	{
+		t = head->next;
+		delete head;
+		head = t;
+		size--;
+		if(size == 0) tail = NULL;
+	}
+	else
+	{
+		index--;
+		link cur = head;
+		do
+		{
+			if(index == 0)
+			{
+				t = cur->next->next;
+				if(tail == cur->next) tail = cur;
+				delete cur->next;
+				cur->next = t;
+				size--;
+				return;
+			}
+			index--;
+			cur = cur->next;
+		}
+		while(cur);
+	}
 }
 
 // check if the queue is empty.

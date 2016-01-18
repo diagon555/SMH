@@ -39,6 +39,7 @@ void Commands::check()
 
 void Commands::check_serial()
 {
+	static boolean pre_n_or_r = false;
 	if(Serial)
 	{
 		if(!serial_init)
@@ -52,7 +53,12 @@ void Commands::check_serial()
 		if(Serial.available())
 		{
 			char ch = Serial.read();
-			if(ch == 13) {
+			if(ch != 10 && ch != 13) pre_n_or_r = false;
+			
+			if(ch == 10 || ch == 13) { //New line
+				if(pre_n_or_r) return;
+				pre_n_or_r = true;
+				
 				buff_serial.trim();
 				buff_serial.toLowerCase();
 				

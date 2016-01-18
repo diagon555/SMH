@@ -39,6 +39,7 @@ public:
 	TempSensors();
 	String command(Command * command);
 	boolean Add(const uint8_t* d_address, String name);
+	uint8_t GetNum(TempSensor *);
 	TempSensor *GetByName(String name);
 	TempSensor *GetByAddress(const uint8_t* d_address);
 	String list();

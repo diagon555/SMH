@@ -12,6 +12,7 @@ void TempSensor::_request()
 	;
 }
 
+
 String TempSensor::GetName()
 {
 	return name;
@@ -41,7 +42,6 @@ TempSensors::TempSensors()
 
 boolean TempSensors::Add(const uint8_t* d_address, String name)
 {
-	// ADD CHECK
 	this->push(new TempSensor(d_address, name));
 }
 
@@ -80,6 +80,16 @@ TempSensor *TempSensors::GetByAddress(const uint8_t* d_address)
 	return 0;
 }
 
+uint8_t TempSensors::GetNum(TempSensor * sensor)
+{
+	uint8_t i = 0;
+	for (link t = head; t != NULL; t = t->next) {
+		if(t->item == sensor) return i;
+		i++;
+	}
+	
+	return i;
+}
 
 String TempSensors::command(Command * command)
 {
@@ -90,7 +100,7 @@ String TempSensors::command(Command * command)
 	String cmd_3 = command->Next();
 	
 	if(cmd == "help") {
-		str += "tempsensors list | assign <num> <name> | remove <name> or <num>\n";
+		str += "tempsensors list | assign <num> <name> | remove <name> or <num>\n\r";
 	} else if(cmd == "list") {
 		str += list();
 	} else if(cmd == "assign") {
@@ -137,8 +147,26 @@ String TempSensors::command(Command * command)
 			str += "Error: invalid sensor number";
 		}
 	} else if(cmd == "remove") {
-		int idx = cmd_2.toInt() - 1;
-		//remove(idx);
+		TempSensor *sensor = GetByName(cmd_2);
+		uint8_t idx = 0;
+		if(sensor)
+		{
+			idx = GetNum(sensor);
+		}
+		else
+		{
+			idx = cmd_2.toInt() - 1;
+		}
+		
+		if(idx < count())
+		{
+			remove(idx);
+			str += "ok";
+		}
+		else
+		{
+			str += "Error: invalid index";
+		}
 	} else {
 		str += "unknown command";
 	}
@@ -157,9 +185,9 @@ String TempSensors::list()
 	str += " ParasitePower: ";
 	if (sensors->isParasitePowerMode()) str += "ON";
 	else str += "OFF";
-	str += "\n";
+	str += "\n\r";
 	
-	str += "Storage:\n";
+	str += "Storage:\n\r";
 	
 	int i = 1;
 	for (link t = head; t != NULL; t = t->next) {
@@ -171,11 +199,11 @@ String TempSensors::list()
 			if (sensorAddress[i] < 16) str += "0";
 			str += String(sensorAddress[i], HEX);
 		}
-		str += "\n";
+		str += "\n\r";
 	}
 	
 	DeviceAddress tempDeviceAddress;
-	str += "Wire scan:\n";
+	str += "Wire scan:\n\r";
 	for(int i=0;i<numberOfDevices; i++)
 	{
 		str += i+1;
@@ -211,7 +239,7 @@ String TempSensors::list()
 		
 		float temp = sensors->getTempC(tempDeviceAddress);
 		str += temp;
-		str += "\n";
+		str += "\n\r";
 	}
 	
 	
