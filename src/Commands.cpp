@@ -1,6 +1,31 @@
 #include "SMH.h"
 #include "Commands.h"
 
+Command::Command(String cmd)
+{
+	command = cmd;
+	command_remain = cmd;
+	command_remain.trim();
+}
+
+String Command::Next()
+{
+	int idx = command_remain.indexOf(" ");
+	String cmd;
+	if(idx != -1) {
+		cmd = command_remain.substring(0, idx);
+		command_remain = command_remain.substring(idx+1);
+	}
+	else {
+		cmd = command_remain;
+		command_remain = "";
+	}	
+	
+	command_remain.trim();
+	
+	return cmd;
+}
+
 Commands::Commands()
 {
 	serial_init = false;
@@ -32,40 +57,34 @@ void Commands::check_serial()
 				buff_serial.toLowerCase();
 				
 				Serial.println();
-				Serial.print("do: ");
-				Serial.println(buff_serial);
+				//Serial.print("do: ");
+				//Serial.println(buff_serial);
 				
-				String bm = buff_serial;
+				Command command(buff_serial);
 				
-				while(bm.length())
-				{
-					bm.trim();
-					int idx = bm.indexOf(" ");
-					String cmd;
-					if(idx != -1) {
-						cmd = bm.substring(0, idx);
-						bm = bm.substring(idx+1);
+				String cmd = command.Next();
+				
+				if(cmd == "help"){
+					Serial.println("SMH 1.0.0");
+					Serial.println("Command list:");
+					Serial.println("tempsensors led ms help");
+					Serial.println("for detiles type <comandname> help");
+				} else if(cmd == "led") {
+					String cmd_2 = command.Next();
+					if(cmd_2 == "on") {
+						digitalWrite(13, HIGH);
+						Serial.println("ok");
 					}
-					else {
-						cmd = bm;
-						bm = "";
+					if(cmd_2 == "off") {
+						digitalWrite(13, LOW);
+						Serial.println("ok");
 					}
-					
-					//Serial.print(String("<")+cmd+ ">|");
-				}
-				//Serial.println();
-				
-				if(buff_serial == "help"){
-					Serial.println("led on, led off");
-				} else if(buff_serial == "led state") {
-					Serial.println(String("last: "));
-				} else if(buff_serial == "led on") {
-					digitalWrite(13, HIGH);
-				} else if(buff_serial == "led off") {
-					digitalWrite(13, LOW);
-				} else if(buff_serial == "tempsensors list") {
-					Serial.println(SMH.tempsensors->list());
-				} else if(buff_serial == "ms") {
+					if(cmd_2 == "help") {
+						Serial.println("led on | off | help");
+					}
+				} else if(cmd == "tempsensors" or cmd == "tsens") {
+					Serial.println(SMH.tempsensors->command(&command));
+				} else if(cmd == "ms") {
 					Serial.println(millis());
 				} else {
 					Serial.println("error command");

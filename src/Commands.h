@@ -3,6 +3,15 @@
 
 #include <Arduino.h>
 
+class Command
+{
+	String command;
+	String command_remain;
+public:
+	Command(String command);
+	String Next();
+};
+
 class Commands
 {
 	boolean serial_init;
