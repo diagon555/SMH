@@ -6,22 +6,20 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
+#include "interfaces.h"
 #include "Commands.h"
 #include "List.h"
 
-#define ONE_WIRE_BUS 53
 #define TEMPERATURE_PRECISION 9
 
-class TempSensor
+class TempSensor: public iNamable
 {
 	uint8_t deviceAddress[8];
-	String name;
 	float temp;
 	
 public:
 	TempSensor(const uint8_t*, String _name);
 	void _request();
-	String GetName();
 	const uint8_t* GetAddress();
 	boolean Availiable();
 	float GetTemp();
@@ -36,12 +34,12 @@ class TempSensors: public List<TempSensor*>
 	DallasTemperature *sensors;
 
 public:
-	TempSensors();
-	String command(Command * command);
+	TempSensors(int pin);
 	boolean Add(const uint8_t* d_address, String name);
 	uint8_t GetNum(TempSensor *);
 	TempSensor *GetByName(String name);
 	TempSensor *GetByAddress(const uint8_t* d_address);
+	String command(Command * command);
 	String list();
 };
 

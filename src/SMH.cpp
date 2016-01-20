@@ -5,16 +5,15 @@
 */
 
 #include "SMH.h"
-//#include "TempSensors.h"
 
-
+#define ONEWIREPIN 53
 
 
 SMHClass::SMHClass()
 {
 	schedulers = new Schedulers();
 	commands = new Commands();
-	tempsensors = new TempSensors();
+	tempsensors = new TempSensors(ONEWIREPIN);
 	
 	
 	//schedulers.add(&TempSensors::read_temp, 1000, 5000);

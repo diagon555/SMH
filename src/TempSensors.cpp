@@ -1,21 +1,15 @@
 #include <TempSensors.h>
 
 TempSensor::TempSensor(const uint8_t* d_address, String _name)
+	:iNamable(_name)
 {
 	for(int i = 0; i < 8; i++)
 		deviceAddress[i] = d_address[i];
-	name = _name;
 }
 
 void TempSensor::_request()
 {
 	;
-}
-
-
-String TempSensor::GetName()
-{
-	return name;
 }
 
 const uint8_t* TempSensor::GetAddress()
@@ -33,9 +27,11 @@ float TempSensor::GetTemp()
 	;
 }
 
-TempSensors::TempSensors()
+//TempSensors
+
+TempSensors::TempSensors(int pin)
 {
-	oneWire = new OneWire(ONE_WIRE_BUS);
+	oneWire = new OneWire(pin);
 	sensors = new DallasTemperature(oneWire);
 	sensors->begin();
 }
@@ -43,6 +39,17 @@ TempSensors::TempSensors()
 boolean TempSensors::Add(const uint8_t* d_address, String name)
 {
 	this->push(new TempSensor(d_address, name));
+}
+
+uint8_t TempSensors::GetNum(TempSensor * sensor)
+{
+	uint8_t i = 0;
+	for (link t = head; t != NULL; t = t->next) {
+		if(t->item == sensor) return i;
+		i++;
+	}
+	
+	return i;
 }
 
 TempSensor *TempSensors::GetByName(String name)
@@ -78,17 +85,6 @@ TempSensor *TempSensors::GetByAddress(const uint8_t* d_address)
 	}
 	
 	return 0;
-}
-
-uint8_t TempSensors::GetNum(TempSensor * sensor)
-{
-	uint8_t i = 0;
-	for (link t = head; t != NULL; t = t->next) {
-		if(t->item == sensor) return i;
-		i++;
-	}
-	
-	return i;
 }
 
 String TempSensors::command(Command * command)

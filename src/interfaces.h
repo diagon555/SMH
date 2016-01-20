@@ -1,6 +1,8 @@
 #ifndef INTERFACES_h
 #define INTERFACES_h
 
+#include <Arduino.h>
+
 class iSerializable
 {
 public:
@@ -10,10 +12,11 @@ public:
 
 class iNamable
 {
-	char name[9];
+	String name;
 public:
-	
-}
+	iNamable(String name);
+	String GetName();
+};
 
 
 #endif

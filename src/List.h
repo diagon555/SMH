@@ -73,9 +73,6 @@ class List {
 
     // get the number of items in the queue.
     int count () const;
-
-    // set the printer of the queue.
-    void setPrinter (Print & p);
   protected:
       // the structure of each node in the list.
     typedef struct node {
@@ -88,17 +85,6 @@ class List {
     link tail;       // the tail of the list.
 
   private:
-    // exit report method in case of error.
-    void exit (const char * m) const;
-
-    // led blinking method in case of error.
-    void blink () const;
-
-    // the pin number of the on-board led.
-    static const int ledPin = 13;
-
-
-    Print * printer; // the printer of the queue.
     int size;        // the size of the queue.
 };
 
@@ -108,7 +94,6 @@ List<T>::List () {
   size = 0;       // set the size of queue to zero.
   head = NULL;    // set the head of the list to point nowhere.
   tail = NULL;    // set the tail of the list to point nowhere.
-  printer = NULL; // set the printer of queue to point nowhere.
 }
 
 // clear the queue (destructor).
@@ -121,7 +106,6 @@ List<T>::~List () {
 
   size = 0;       // set the size of queue to zero.
   tail = NULL;    // set the tail of the list to point nowhere.
-  printer = NULL; // set the printer of queue to point nowhere.
 }
 
 // push an item to the queue.
@@ -135,7 +119,7 @@ void List<T>::push (const T i) {
 
   // if there is a memory allocation error.
   if (tail == NULL)
-    exit ("QUEUE: insufficient memory to create a new node.");
+    return;
 
   // set the next of the new node.
   tail->next = NULL;
@@ -160,7 +144,7 @@ template<typename T>
 T List<T>::pop () {
   // check if the queue is empty.
   if (isEmpty ())
-    exit ("QUEUE: can't pop item from queue: queue is empty.");
+    return NULL;
 
   // get the item of the head node.
   T item = head->item;
@@ -180,7 +164,7 @@ template<typename T>
 T List<T>::peek () const {
   // check if the queue is empty.
   if (isEmpty ())
-    exit ("QUEUE: can't peek item from queue: queue is empty.");
+    return NULL;
 
   // return the item of the head node.
   return head->item;
@@ -232,38 +216,5 @@ int List<T>::count () const {
   return size;
 }
 
-// set the printer of the queue.
-template<typename T>
-void List<T>::setPrinter (Print & p) {
-  printer = &p;
-}
-
-// exit report method in case of error.
-template<typename T>
-void List<T>::exit (const char * m) const {
-  // print the message if there is a printer.
-  if (printer)
-    printer->println (m);
-
-  // loop blinking until hardware reset.
-  blink ();
-}
-
-// led blinking method in case of error.
-template<typename T>
-void List<T>::blink () const {
-  // set led pin as output.
-  pinMode (ledPin, OUTPUT);
-
-  // continue looping until hardware reset.
-  while (true) {
-    digitalWrite (ledPin, HIGH); // sets the LED on.
-    delay (250);                 // pauses 1/4 of second.
-    digitalWrite (ledPin, LOW);  // sets the LED off.
-    delay (250);                 // pauses 1/4 of second.
-  }
-
-  // solution selected due to lack of exit() and assert().
-}
 
 #endif // _LIST_H

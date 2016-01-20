@@ -26,6 +26,7 @@ String Command::Next()
 	return cmd;
 }
 
+//Commands
 Commands::Commands()
 {
 	serial_init = false;

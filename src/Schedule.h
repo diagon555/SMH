@@ -8,9 +8,9 @@
 class Scheduler
 {
 	unsigned long timer;
+	int delay;
 	void (*func)();
 public:
-	int delay;
 	Scheduler(void (*func)(), int _delay, int first_delay = 1000);
 	void run(boolean millis_over);
 };
