@@ -6,16 +6,28 @@
 
 #include "SMH.h"
 
+
 #define ONEWIREPIN 53
 
 
 SMHClass::SMHClass()
 {
+	Serial.begin(9600);
+	Serial.println("SMH start");
+	
+	serializer = new Serializer();
 	schedulers = new Schedulers();
 	commands = new Commands();
 
+	
 	tempsensors = new TempSensors(ONEWIREPIN);
+	
+	
+	serializer->Add(tempsensors);
+	
 	schedulers->add(TempSensors::check, 1000, 3000);
+	
+	serializer->LoadFromEEPROM();
 	
 	//TEMP for led command
 	pinMode(13, OUTPUT);

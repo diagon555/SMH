@@ -12,6 +12,7 @@
 
 #define TEMPERATURE_PRECISION 9
 #define MAX_ERROR_REQUEST 5
+#define MAX_COUNT_SENSORS 20
 
 class TempSensor: public iNamable
 {
@@ -37,8 +38,8 @@ class TempSensors: public List<TempSensor*>, public iSerializable
 public:
 	static TempSensors* instance;
 	TempSensors(int pin);
-	void Serialize();
-	void Deserialize();
+	virtual void Serialize();
+	virtual void Deserialize();
 	boolean Add(const uint8_t* d_address, String name);
 	uint8_t GetNum(TempSensor *);
 	TempSensor *GetByName(String name);

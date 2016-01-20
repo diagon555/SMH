@@ -1,10 +1,9 @@
 #include "interfaces.h"
 
 
-iSerializable::iSerializable(int rom_size, int start_address)
+iSerializable::iSerializable(int rom_size)
 {
 	this->rom_size = rom_size;
-	this->start_address = start_address;
 }
 
 

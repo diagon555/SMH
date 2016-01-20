@@ -26,6 +26,7 @@
 #include <String.h>
 
 #include "Schedule.h"
+#include "Serializer.h"
 #include "Commands.h"
 #include "TempSensors.h"
 
@@ -35,6 +36,7 @@ private:
 	String logfile_path;
 	Print * printer;
 	Commands * commands;
+	Serializer * serializer;
 	Schedulers * schedulers;
 public:
 	SMHClass();

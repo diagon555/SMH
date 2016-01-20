@@ -41,15 +41,13 @@ float TempSensor::GetTemp()
 TempSensors* TempSensors::instance;
 
 TempSensors::TempSensors(int pin)
-	:iSerializable(1+((8+8)*24), 130)
+	:iSerializable(1+((8+8)*MAX_COUNT_SENSORS))
 {
 	TempSensors::instance = this;
 	
 	oneWire = new OneWire(pin);
 	sensors = new DallasTemperature(oneWire);
 	sensors->begin();
-	
-	Deserialize();
 }
 
 void TempSensors::Serialize()
@@ -79,8 +77,8 @@ void TempSensors::Serialize()
 void TempSensors::Deserialize()
 {
 	int addr = start_address;
-	int count = EEPROM.read(addr++);
-	for (int idx = 0; idx < count; idx++) {
+	uint8_t count = EEPROM.read(addr++);
+	for (uint8_t idx = 0; idx < count; idx++) {
 		uint8_t taddr[8];
 		for(int i=0; i < 8; i++)
 			taddr[i] = EEPROM.read(addr++);
