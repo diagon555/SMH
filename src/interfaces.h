@@ -2,12 +2,17 @@
 #define INTERFACES_h
 
 #include <Arduino.h>
+#include <EEPROM.h>
 
 class iSerializable
 {
+protected:
+	int rom_size;
+	int start_address;
 public:
-	virtual int Serialize(int addr);
-	virtual int Deserialize(int addr);
+	iSerializable(int rom_size, int start_address);
+	virtual void Serialize() = 0;
+	virtual void Deserialize() = 0;
 };
 
 class iNamable

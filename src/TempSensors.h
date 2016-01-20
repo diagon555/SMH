@@ -11,21 +11,22 @@
 #include "List.h"
 
 #define TEMPERATURE_PRECISION 9
+#define MAX_ERROR_REQUEST 5
 
 class TempSensor: public iNamable
 {
 	uint8_t deviceAddress[8];
 	float temp;
-	
+	int aval;
 public:
 	TempSensor(const uint8_t*, String _name);
-	void _request();
+	void _set_temp(float temp);
 	const uint8_t* GetAddress();
 	boolean Availiable();
 	float GetTemp();
 };
 
-class TempSensors: public List<TempSensor*>
+class TempSensors: public List<TempSensor*>, public iSerializable
 {
 	// Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
 	OneWire *oneWire;
@@ -36,6 +37,8 @@ class TempSensors: public List<TempSensor*>
 public:
 	static TempSensors* instance;
 	TempSensors(int pin);
+	void Serialize();
+	void Deserialize();
 	boolean Add(const uint8_t* d_address, String name);
 	uint8_t GetNum(TempSensor *);
 	TempSensor *GetByName(String name);

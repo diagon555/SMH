@@ -5,11 +5,20 @@ TempSensor::TempSensor(const uint8_t* d_address, String _name)
 {
 	for(int i = 0; i < 8; i++)
 		deviceAddress[i] = d_address[i];
+	aval = -1;
 }
 
-void TempSensor::_request()
+void TempSensor::_set_temp(float temp)
 {
-	temp = 25;
+	if(temp != DEVICE_DISCONNECTED_C)
+	{
+		this->temp = temp;
+		aval = 0;
+	}
+	else
+	{
+		aval++;
+	}
 }
 
 const uint8_t* TempSensor::GetAddress()
@@ -19,7 +28,7 @@ const uint8_t* TempSensor::GetAddress()
 
 boolean TempSensor::Availiable()
 {
-	return true;
+	return (aval >=0 && aval < MAX_ERROR_REQUEST);
 }
 
 float TempSensor::GetTemp()
@@ -32,12 +41,59 @@ float TempSensor::GetTemp()
 TempSensors* TempSensors::instance;
 
 TempSensors::TempSensors(int pin)
+	:iSerializable(1+((8+8)*24), 130)
 {
 	TempSensors::instance = this;
 	
 	oneWire = new OneWire(pin);
 	sensors = new DallasTemperature(oneWire);
 	sensors->begin();
+	
+	Deserialize();
+}
+
+void TempSensors::Serialize()
+{
+	int addr = start_address;
+	EEPROM.update(addr++, count());
+	for (link t = head; t != NULL; t = t->next) {
+		const uint8_t* taddr = t->item->GetAddress();
+		for(int i=0; i < 8; i++)
+		{
+			EEPROM.update(addr++, taddr[i]);
+		}
+		String name = t->item->GetName();
+		for(int i=0; i < 8; i++)
+		{
+			char ch;
+			if(i < name.length())
+				ch = name[i];
+			else
+				ch = 0;
+			
+			EEPROM.update(addr++, ch);
+		}
+	}
+}
+
+void TempSensors::Deserialize()
+{
+	int addr = start_address;
+	int count = EEPROM.read(addr++);
+	for (int idx = 0; idx < count; idx++) {
+		uint8_t taddr[8];
+		for(int i=0; i < 8; i++)
+			taddr[i] = EEPROM.read(addr++);
+
+		char name[9];
+		for(int i=0; i < 8; i++)
+		{
+			name[i] = EEPROM.read(addr++);
+		}
+		name[8] = 0;
+		
+		this->push(new TempSensor(taddr, String(name)));
+	}
 }
 
 boolean TempSensors::Add(const uint8_t* d_address, String name)
@@ -136,6 +192,7 @@ String TempSensors::command(Command * command)
 				}
 				str += " assigned to ";
 				str += cmd_3;
+				Serialize();
 			}
 			else
 			{
@@ -162,13 +219,36 @@ String TempSensors::command(Command * command)
 		{
 			remove(idx);
 			str += "ok";
+			Serialize();
 		}
 		else
 		{
 			str += "Error: invalid index";
 		}
+	} else if(cmd == "status") {
+		int i = 1;
+		for (link t = head; t != NULL; t = t->next) {
+			str += String(i++) + ": " + t->item->GetName() + " ";
+			
+			if(t->item->Availiable())
+			{
+				str += t->item->GetTemp();
+			}
+			else
+			{
+				str += "no_val";
+			}
+			
+			str += "\n\r";
+		}
 	} else {
-		str += "unknown command";
+		TempSensor *sens = GetByName(cmd);
+		if(sens)
+		{
+			str += String("sensor ") + cmd + " " + sens->GetTemp();
+		}
+		else
+			str += "unknown command";
 	}
 	
 	return str;
@@ -260,8 +340,12 @@ String TempSensors::list()
 void TempSensors::_check()
 {
 	for (link t = head; t != NULL; t = t->next) {
-		t->item->_request();
+		t->item->_set_temp(sensors->getTempC(t->item->GetAddress()));
 	}
+	
+	sensors->setWaitForConversion(false);  // makes it async
+	sensors->requestTemperatures();
+	sensors->setWaitForConversion(true);
 }
 
 void TempSensors::check()
