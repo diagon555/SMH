@@ -34,6 +34,7 @@ class TempSensors: public List<TempSensor*>
 	DallasTemperature *sensors;
 
 public:
+	static TempSensors* instance;
 	TempSensors(int pin);
 	boolean Add(const uint8_t* d_address, String name);
 	uint8_t GetNum(TempSensor *);
@@ -41,6 +42,8 @@ public:
 	TempSensor *GetByAddress(const uint8_t* d_address);
 	String command(Command * command);
 	String list();
+	void _check();
+	static void check(); //Sheduler every 1000ms (get temp from sensors)
 };
 
 

@@ -1,4 +1,4 @@
-#include <TempSensors.h>
+#include "TempSensors.h"
 
 TempSensor::TempSensor(const uint8_t* d_address, String _name)
 	:iNamable(_name)
@@ -9,7 +9,7 @@ TempSensor::TempSensor(const uint8_t* d_address, String _name)
 
 void TempSensor::_request()
 {
-	;
+	temp = 25;
 }
 
 const uint8_t* TempSensor::GetAddress()
@@ -19,18 +19,22 @@ const uint8_t* TempSensor::GetAddress()
 
 boolean TempSensor::Availiable()
 {
-	;
+	return true;
 }
 
 float TempSensor::GetTemp()
 {
-	;
+	return temp;
 }
 
 //TempSensors
 
+TempSensors* TempSensors::instance;
+
 TempSensors::TempSensors(int pin)
 {
+	TempSensors::instance = this;
+	
 	oneWire = new OneWire(pin);
 	sensors = new DallasTemperature(oneWire);
 	sensors->begin();
@@ -195,6 +199,16 @@ String TempSensors::list()
 			if (sensorAddress[i] < 16) str += "0";
 			str += String(sensorAddress[i], HEX);
 		}
+		
+		if(t->item->Availiable())
+		{
+			str += String(" ") + t->item->GetTemp();
+		}
+		else
+		{
+			str += " unaval";
+		}
+		
 		str += "\n\r";
 	}
 	
@@ -243,3 +257,14 @@ String TempSensors::list()
 	return str;
 }
 
+void TempSensors::_check()
+{
+	for (link t = head; t != NULL; t = t->next) {
+		t->item->_request();
+	}
+}
+
+void TempSensors::check()
+{
+	TempSensors::instance->_check();
+}
