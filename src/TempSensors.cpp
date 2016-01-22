@@ -78,6 +78,7 @@ void TempSensors::Deserialize()
 {
 	int addr = start_address;
 	uint8_t count = EEPROM.read(addr++);
+	if(count > MAX_COUNT_SENSORS) count = 0;
 	for (uint8_t idx = 0; idx < count; idx++) {
 		uint8_t taddr[8];
 		for(int i=0; i < 8; i++)
