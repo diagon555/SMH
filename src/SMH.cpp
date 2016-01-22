@@ -21,16 +21,14 @@ SMHClass::SMHClass()
 
 	
 	tempsensors = new TempSensors(ONEWIREPIN);
-	
+	relays = new Relays();
 	
 	serializer->Add(tempsensors);
+	serializer->Add(relays);
 	
 	schedulers->add(TempSensors::check, 1000, 3000);
 	
 	serializer->LoadFromEEPROM();
-	
-	//TEMP for led command
-	pinMode(13, OUTPUT);
 }
 
 void SMHClass::set_logfile_path(String path)

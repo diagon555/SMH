@@ -29,6 +29,8 @@
 #include "Serializer.h"
 #include "Commands.h"
 #include "TempSensors.h"
+#include "Relay.h"
+
 
 class SMHClass
 {
@@ -38,10 +40,12 @@ private:
 	Commands * commands;
 	Serializer * serializer;
 	Schedulers * schedulers;
+
 public:
 	SMHClass();
 
  	TempSensors * tempsensors;
+ 	Relays * relays;
 
 	void set_logfile_path(String);
 	void set_printer(Print &);

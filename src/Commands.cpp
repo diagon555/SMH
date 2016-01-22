@@ -76,19 +76,8 @@ void Commands::check_serial()
 					Serial.println("Command list:");
 					Serial.println("tempsensors led ms help");
 					Serial.println("for detiles type <comandname> help");
-				} else if(cmd == "led") {
-					String cmd_2 = command.Next();
-					if(cmd_2 == "on") {
-						digitalWrite(13, HIGH);
-						Serial.println("ok");
-					}
-					if(cmd_2 == "off") {
-						digitalWrite(13, LOW);
-						Serial.println("ok");
-					}
-					if(cmd_2 == "help") {
-						Serial.println("led on | off | help");
-					}
+				} else if(cmd == "relay") {
+					Serial.println(SMH.relays->command(&command));
 				} else if(cmd == "tempsensors" or cmd == "tsens") {
 					Serial.println(SMH.tempsensors->command(&command));
 				} else if(cmd == "ms") {
