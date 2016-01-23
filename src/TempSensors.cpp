@@ -102,7 +102,7 @@ boolean TempSensors::Add(const uint8_t* d_address, String name)
 
 uint8_t TempSensors::GetNum(TempSensor * sensor)
 {
-	uint8_t i = 0;
+	uint8_t i = 255;
 	for (link t = head; t != NULL; t = t->next) {
 		if(t->item == sensor) return i;
 		i++;
