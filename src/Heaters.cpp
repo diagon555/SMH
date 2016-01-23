@@ -183,7 +183,7 @@ String Heaters::command(Command * command)
 			String cur_state = "";
 			if(t->item->GetCurrentStatus()) cur_state = "!";
 
-			str += String(i) + ": " + t->item->GetName() + " " + cur_state + t->item->GetTemp() + "(" + t->item->GetSetTemp() + ") Tset:" + t->item->GetTempSupport() + " " + state + "\n\r";
+			str += String(i) + ": " + t->item->GetName() + " " + cur_state + t->item->GetTemp() + "(" + t->item->GetSetTemp() + ") Tsup:" + t->item->GetTempSupport() + " " + state + "\n\r";
 			i++;
 		}
 	} else {
