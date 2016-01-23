@@ -103,7 +103,7 @@ String Relays::command(Command *command)
 	String cmd_3 = command->Next();
 	
 	if(cmd == "help") {
-		str += "relay list | add <name> <pin> ?<st_on=1> | add shiftreg <name> <pin> ?<st_on=1> | remove <name> or <num> | <name> (?on|off)\n\r";
+		return help();
 	} else if(cmd == "add") {
 		if(cmd_2 != "shiftreg")
 		{
@@ -132,9 +132,7 @@ String Relays::command(Command *command)
 		{
 			str += "Error: invalid index";
 		}
-		
-		str += "OK removed";
-	} else if(cmd == "list" || cmd == "status") {
+	} else if(cmd == "list" || cmd == "status" || cmd == "st") {
 		int i = 1;
 		for (link t = head; t != NULL; t = t->next) {
 			str += String(i) + ": " + t->item->GetName() + " pin" + t->item->GetPin() + " status:" + t->item->GetStatus() + "\n\r";
@@ -156,7 +154,7 @@ String Relays::command(Command *command)
 		}
 		else
 		{
-			str += "unknown command";
+			return help();
 		}
 	}
 	
@@ -165,13 +163,29 @@ String Relays::command(Command *command)
 
 uint8_t Relays::GetNum(Relay *relay)
 {
-	uint8_t i = 255;
+	uint8_t i = 0;
 	for (link t = head; t != NULL; t = t->next) {
 		if(t->item == relay) return i;
 		i++;
 	}
 	
-	return i;
+	return 255;
+}
+
+Relay *Relays::GetByNum(uint8_t num)
+{
+	if(num >= count()) return NULL;
+	
+	
+	for (link t = head; t != NULL; t = t->next) {
+		if(!num)
+		{
+			return t->item;
+		}
+		num--;
+	}
+	
+	return 0;
 }
 
 Relay *Relays::GetByName(String name)
@@ -181,5 +195,13 @@ Relay *Relays::GetByName(String name)
 		{
 			return t->item;
 		}
-	}	
+	}
+	
+	return NULL;
 }
+
+String Relays::help()
+{
+	return "relay list | add <name> <pin> ?<st_on=1> | add shiftreg <name> <pin> ?<st_on=1> | remove <name> or <num> | <name> (?on|off)\n\r";
+}
+

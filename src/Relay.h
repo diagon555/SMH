@@ -41,7 +41,9 @@ public:
 	String command(Command * command);
 	void Add(Relay *relay){push(relay);};
 	uint8_t GetNum(Relay *);
+	Relay *GetByNum(uint8_t num);
 	Relay *GetByName(String name);
+	String help();
 };
 
 #endif
