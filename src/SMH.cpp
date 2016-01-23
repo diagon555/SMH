@@ -22,11 +22,14 @@ SMHClass::SMHClass()
 	
 	tempsensors = new TempSensors(ONEWIREPIN);
 	relays = new Relays();
+	heaters = new Heaters();
 	
 	serializer->Add(tempsensors);
 	serializer->Add(relays);
+	serializer->Add(heaters);
 	
 	schedulers->add(TempSensors::check, 1000, 3000);
+	schedulers->add(Heaters::check, 1000, 3000);
 	
 	serializer->LoadFromEEPROM();
 }

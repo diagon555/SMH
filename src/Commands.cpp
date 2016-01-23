@@ -80,6 +80,8 @@ void Commands::check_serial()
 					Serial.println(SMH.relays->command(&command));
 				} else if(cmd == "tempsensors" or cmd == "tsens") {
 					Serial.println(SMH.tempsensors->command(&command));
+				} else if(cmd == "heat" or cmd == "heater" or cmd == "heaters") {
+					Serial.println(SMH.heaters->command(&command));
 				} else if(cmd == "ms") {
 					Serial.println(millis());
 				} else {

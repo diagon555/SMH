@@ -30,6 +30,7 @@
 #include "Commands.h"
 #include "TempSensors.h"
 #include "Relay.h"
+#include "Heaters.h"
 
 
 class SMHClass
@@ -46,6 +47,7 @@ public:
 
  	TempSensors * tempsensors;
  	Relays * relays;
+ 	Heaters * heaters;
 
 	void set_logfile_path(String);
 	void set_printer(Print &);
