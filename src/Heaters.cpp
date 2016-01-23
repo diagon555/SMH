@@ -1,4 +1,5 @@
 #include "Heaters.h"
+#include "SMH.h"
 
 Heater::Heater(String name, Relay *relay, TempSensor *tempsensor, int Tset, int Tsup, boolean state)
 	:iNamable(name)
@@ -72,10 +73,25 @@ String Heaters::command(Command * command)
 	String cmd_2 = command->Next();
 	
 	if(cmd == "help") {
-		str += "heater list | add <name> <relay_num> <tempsensor_num> | <name> (on|off|set <temp>|set tsup <temp>) \n\r";
+		str += "heater list | add <name> <relay_name> <tempsensor_name> | <name> (on|off|set <temp>|set tsup <temp>) \n\r";
 	} else if(cmd == "add") {
-		//Relay relay = relays->
-		//Add(new Heater(cmd_2, relay, tempsensor));
+		String str_relay = command->Next();
+		Relay *relay = SMH.relays->GetByName(str_relay);
+		if(!relay)
+		{
+			str += "not found relay";
+			return str;
+		}
+		
+		String str_tsens = command->Next();
+		TempSensor *tempsensor = SMH.tempsensors->GetByName(str_tsens);
+		if(!tempsensor)
+		{
+			str += "not found tempsensor";
+			return str;
+		}
+		
+		Add(new Heater(cmd_2, relay, tempsensor));
 		//Serialize();
 	} else if(cmd == "list" || cmd == "status") {
 		int i = 1;
