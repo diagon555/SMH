@@ -4,6 +4,7 @@
 Heater::Heater(String name, Relay *relay, TempSensor *tempsensor, int Tset, int Tsup, boolean state)
 	:iNamable(name)
 {
+	this->heat_current = false;
 	this->relay = relay;
 	this->tempsensor = tempsensor;
 	this->Tset = Tset;
@@ -11,9 +12,69 @@ Heater::Heater(String name, Relay *relay, TempSensor *tempsensor, int Tset, int 
 	this->heat_state = state;
 }
 
+int Heater::Serialize(int addr)
+{
+	EEPROM.update(addr++, SMH.relays->GetNum(relay));//relay
+	EEPROM.update(addr++, SMH.tempsensors->GetNum(tempsensor));//tempsensor
+	EEPROM.update(addr++, Tset);
+	EEPROM.update(addr++, Tsup);
+	EEPROM.update(addr++, heat_state);
+	String name = GetName();
+	for(int i=0; i < 8; i++)
+	{
+		char ch;
+		if(i < name.length())
+			ch = name[i];
+		else
+			ch = 0;
+		
+		EEPROM.update(addr++, ch);
+	}
+	
+	return addr;
+}
+
 void Heater::check()
 {
-	//
+	if(tempsensor->Availiable())
+	{
+		float temp = tempsensor->GetTemp();
+		
+		if(Tsup != HEAT_OFF && temp-HYSTERESIS < Tsup)
+		{
+			set_state(true);
+		}
+		else if(heat_state && Tset != HEAT_OFF && temp-HYSTERESIS < Tset)
+		{
+			set_state(true);
+		}
+		else if(temp > Tset)
+		{
+			set_state(false);
+		}
+		else if((!heat_state || Tset == HEAT_OFF) && (Tsup == HEAT_OFF || temp > Tsup))
+		{
+			set_state(false);
+		}
+	}
+	else
+	{
+		set_state(false);
+	}
+}
+
+void Heater::set_state(boolean state)
+{
+	if(heat_current != state)
+	{
+		heat_current = state;
+		if(state){
+			relay->On();
+		}
+		else{
+			relay->Off();
+		}
+	}
 }
 
 //Heaters
@@ -30,18 +91,7 @@ void Heaters::Serialize()
 	int addr = start_address;
 	EEPROM.update(addr++, count());
 	for (link t = head; t != NULL; t = t->next) {
-		addr += 5;
-		String name = t->item->GetName();
-		for(int i=0; i < 8; i++)
-		{
-			char ch;
-			if(i < name.length())
-				ch = name[i];
-			else
-				ch = 0;
-			
-			EEPROM.update(addr++, ch);
-		}
+		addr = t->item->Serialize(addr);
 	}
 
 }
@@ -52,7 +102,12 @@ void Heaters::Deserialize()
 	uint8_t count = EEPROM.read(addr++);
 	if(count > MAX_COUNT_HEATERS) count = 0;
 	for (uint8_t idx = 0; idx < count; idx++) {
-		addr += 5;
+		Relay *relay = SMH.relays->GetByNum(EEPROM.read(addr++));
+		TempSensor *tempsensor = SMH.tempsensors->GetByNum(EEPROM.read(addr++));
+		int Tset = EEPROM.read(addr++);
+		int Tsup = EEPROM.read(addr++);
+		int heat_state = EEPROM.read(addr++);
+		
 		
 		char name[9];
 		for(int i=0; i < 8; i++)
@@ -61,8 +116,8 @@ void Heaters::Deserialize()
 		}
 		name[8] = 0;
 		
-		//this->push(new Heater(String(name)));
-	}	
+		this->push(new Heater(String(name), relay, tempsensor, Tset, Tsup, heat_state));
+	}
 }
 
 String Heaters::command(Command * command)
@@ -73,7 +128,7 @@ String Heaters::command(Command * command)
 	String cmd_2 = command->Next();
 	
 	if(cmd == "help") {
-		str += "heater list | add <name> <relay_name> <tempsensor_name> | <name> (on|off|set <temp>|set tsup <temp>) \n\r";
+		return help();
 	} else if(cmd == "add") {
 		String str_relay = command->Next();
 		Relay *relay = SMH.relays->GetByName(str_relay);
@@ -92,8 +147,31 @@ String Heaters::command(Command * command)
 		}
 		
 		Add(new Heater(cmd_2, relay, tempsensor));
-		//Serialize();
-	} else if(cmd == "list" || cmd == "status") {
+		str += "OK";
+		Serialize();
+	} else if(cmd == "remove") {
+		Heater *heater = GetByName(cmd_2);
+		uint8_t idx = 0;
+		if(heater)
+		{
+			idx = GetNum(heater);
+		}
+		else
+		{
+			idx = cmd_2.toInt() - 1;
+		}
+		
+		if(idx < count())
+		{
+			remove(idx);
+			str += "ok";
+			Serialize();
+		}
+		else
+		{
+			str += "Error: invalid index";
+		}
+	} else if(cmd == "list" || cmd == "status" || cmd == "st") {
 		int i = 1;
 		for (link t = head; t != NULL; t = t->next) {
 			String state;
@@ -102,7 +180,10 @@ String Heaters::command(Command * command)
 			else
 				state = "off";
 			
-			str += String(i) + ": " + t->item->GetName() + " " + t->item->GetTemp() + "(" + t->item->GetSetTemp() + ") " + state + "\n\r";
+			String cur_state = "";
+			if(t->item->GetCurrentStatus()) cur_state = "!";
+
+			str += String(i) + ": " + t->item->GetName() + " " + cur_state + t->item->GetTemp() + "(" + t->item->GetSetTemp() + ") Tset:" + t->item->GetTempSupport() + " " + state + "\n\r";
 			i++;
 		}
 	} else {
@@ -115,18 +196,55 @@ String Heaters::command(Command * command)
 			} else if(cmd_2 == "off") {
 				heater->Off();
 				str += "OK OFF";
+			} else if(cmd_2 == "set") {
+				int temp;
+				String cmd_3 = command->Next();
+				if(cmd_3 == "tsup")
+				{
+					String cmd_4 = command->Next();
+					temp = cmd_4.toInt();
+					if(temp >= 0 && temp <= 10)
+					{
+						heater->SetTempSupport(temp);
+						str += String("OK SET Tsup ") + temp;
+					}
+					else
+					{
+						str += "Error not valid set temp";
+						return str;
+					}
+				}
+				else
+				{
+					temp = cmd_3.toInt();
+					if(temp >= 0 && temp <= 30)
+					{
+						heater->SetTemp(temp);
+						str += String("OK SET ") + temp;
+					}
+					else
+					{
+						str += "Error not valid set temp";
+						return str;
+					}
+				}
+				Serialize();
 			} else {
 				String state;
 				if(heater->GetStatus())
 					state = "on";
 				else
 					state = "off";
-				str += String("Heater ") + heater->GetName() + " " + heater->GetTemp() + "(" + heater->GetSetTemp() + ") " + state + "\n\r";
+				
+				String cur_state = "";
+				if(heater->GetCurrentStatus()) cur_state = "!";
+				
+				str += String("Heater ") + heater->GetName() + " " + cur_state + heater->GetTemp() + "(" + heater->GetSetTemp() + ") " + state + "\n\r";
 			}
 		}
 		else
 		{
-			str += "unknown command";
+			return help();
 		}
 	}
 	
@@ -136,13 +254,13 @@ String Heaters::command(Command * command)
 
 uint8_t Heaters::GetNum(Heater *heater)
 {
-	uint8_t i = 255;
+	uint8_t i = 0;
 	for (link t = head; t != NULL; t = t->next) {
 		if(t->item == heater) return i;
 		i++;
 	}
 	
-	return i;
+	return 255;
 }
 
 Heater *Heaters::GetByName(String name)
@@ -152,7 +270,14 @@ Heater *Heaters::GetByName(String name)
 		{
 			return t->item;
 		}
-	}	
+	}
+	
+	return NULL;
+}
+
+String Heaters::help()
+{
+	return "heater list | add <name> <relay_name> <tempsensor_name> | remove <name> | <name> (on|off|set <temp>|set tsup <temp>) \n\r";
 }
 
 void Heaters::_check()
