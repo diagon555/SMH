@@ -165,7 +165,7 @@ String Relays::command(Command *command)
 
 uint8_t Relays::GetNum(Relay *relay)
 {
-	uint8_t i = 0;
+	uint8_t i = 255;
 	for (link t = head; t != NULL; t = t->next) {
 		if(t->item == relay) return i;
 		i++;
