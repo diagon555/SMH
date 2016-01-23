@@ -42,9 +42,11 @@ public:
 	virtual void Deserialize();
 	boolean Add(const uint8_t* d_address, String name);
 	uint8_t GetNum(TempSensor *);
+	TempSensor *GetByNum(uint8_t num);
 	TempSensor *GetByName(String name);
 	TempSensor *GetByAddress(const uint8_t* d_address);
 	String command(Command * command);
+	String help();
 	String list();
 	void _check();
 	static void check(); //Sheduler every 1000ms (get temp from sensors)

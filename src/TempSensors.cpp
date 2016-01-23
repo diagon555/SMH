@@ -102,13 +102,29 @@ boolean TempSensors::Add(const uint8_t* d_address, String name)
 
 uint8_t TempSensors::GetNum(TempSensor * sensor)
 {
-	uint8_t i = 255;
+	uint8_t i = 0;
 	for (link t = head; t != NULL; t = t->next) {
 		if(t->item == sensor) return i;
 		i++;
 	}
 	
-	return i;
+	return 255;
+}
+
+TempSensor *TempSensors::GetByNum(uint8_t num)
+{
+	if(num >= count()) return NULL;
+	
+	
+	for (link t = head; t != NULL; t = t->next) {
+		if(!num)
+		{
+			return t->item;
+		}
+		num--;
+	}
+	
+	return 0;
 }
 
 TempSensor *TempSensors::GetByName(String name)
@@ -155,7 +171,7 @@ String TempSensors::command(Command * command)
 	String cmd_3 = command->Next();
 	
 	if(cmd == "help") {
-		str += "tempsensors list | assign <num> <name> | remove <name> or <num>\n\r";
+		return help();
 	} else if(cmd == "list") {
 		str += list();
 	} else if(cmd == "assign") {
@@ -224,7 +240,7 @@ String TempSensors::command(Command * command)
 		{
 			str += "Error: invalid index";
 		}
-	} else if(cmd == "status") {
+	} else if(cmd == "status" || cmd == "st") {
 		int i = 1;
 		for (link t = head; t != NULL; t = t->next) {
 			str += String(i++) + ": " + t->item->GetName() + " ";
@@ -247,10 +263,15 @@ String TempSensors::command(Command * command)
 			str += String("sensor ") + cmd + " " + sens->GetTemp();
 		}
 		else
-			str += "unknown command";
+			return help();
 	}
 	
 	return str;
+}
+
+String TempSensors::help()
+{
+	return "tempsensors list | assign <num> <name> | remove <name> or <num>\n\r";
 }
 
 String TempSensors::list()
