@@ -217,7 +217,7 @@ String Heaters::command(Command * command)
 				else
 				{
 					temp = cmd_3.toInt();
-					if(temp >= 0 && temp <= 30)
+					if(temp >= 1 && temp <= 30)
 					{
 						heater->SetTemp(temp);
 						str += String("OK SET ") + temp;
