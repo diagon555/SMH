@@ -108,6 +108,7 @@ String Relays::command(Command *command)
 		if(cmd_2 != "shiftreg")
 		{
 			Add(new Relay(cmd_2, cmd_3.toInt()));
+			str += String("Relay ") + cmd_2 + " was added";
 			Serialize();
 		}	
 	} else if(cmd == "remove") {
@@ -125,7 +126,7 @@ String Relays::command(Command *command)
 		if(idx < count())
 		{
 			remove(idx);
-			str += "OK Removed";
+			str += String("OK Relay ") + idx + " Removed";
 			Serialize();
 		}
 		else
@@ -144,10 +145,10 @@ String Relays::command(Command *command)
 		{
 			if(cmd_2 == "on"){
 				relay->On();
-				str += "OK ON";
+				str += String("Relay ") + relay->GetName() + " ON";
 			} else if(cmd_2 == "off") {
 				relay->Off();
-				str += "OK OFF";
+				str += String("Relay ") + relay->GetName() + " OFF";
 			} else {
 				str += String("Relay ") + relay->GetName() + " pin:" + relay->GetPin() + " status:" + relay->GetStatus() + "\n\r";
 			}

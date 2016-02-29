@@ -71,12 +71,7 @@ void Commands::check_serial()
 				
 				String cmd = command.Next();
 				
-				if(cmd == "help"){
-					Serial.println("SMH 1.0.0");
-					Serial.println("Command list:");
-					Serial.println("tempsensors led ms help");
-					Serial.println("for detiles type <comandname> help");
-				} else if(cmd == "relay") {
+				if(cmd == "relay") {
 					Serial.println(SMH.relays->command(&command));
 				} else if(cmd == "tempsensors" or cmd == "tsens") {
 					Serial.println(SMH.tempsensors->command(&command));
@@ -85,7 +80,10 @@ void Commands::check_serial()
 				} else if(cmd == "ms") {
 					Serial.println(millis());
 				} else {
-					Serial.println("error command");
+					Serial.println("SMH 1.0.0");
+					Serial.println("Command list:");
+					Serial.println("relay tempsensors heater ms help");
+					Serial.println("for detiles type <comandname> help");
 				}
 				
 				buff_serial = "";
