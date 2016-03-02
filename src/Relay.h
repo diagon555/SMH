@@ -4,7 +4,6 @@
 #include <Arduino.h>
 
 #include "interfaces.h"
-#include "List.h"
 #include "Commands.h"
 
 #define MAX_COUNT_RELAY 16
@@ -32,7 +31,7 @@ public:
 	void Off();
 };
 
-class Relays: public List<Relay*>, public iSerializable
+class Relays: public iListSearch<Relay*>, public iSerializable
 {
 public:
 	Relays();
@@ -40,9 +39,6 @@ public:
 	virtual void Deserialize();
 	String command(Command * command);
 	void Add(Relay *relay){push(relay);};
-	uint8_t GetNum(Relay *);
-	Relay *GetByNum(uint8_t num);
-	Relay *GetByName(String name);
 	String help();
 };
 

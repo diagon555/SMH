@@ -19,3 +19,4 @@ String iNamable::GetName()
 {
 	return String(name);
 }
+

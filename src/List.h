@@ -73,8 +73,8 @@ class List {
 
     // get the number of items in the queue.
     int count () const;
-  protected:
-      // the structure of each node in the list.
+
+	// the structure of each node in the list.
     typedef struct node {
       T item;      // the item in the node.
       node * next; // the next node in the list.

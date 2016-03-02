@@ -162,45 +162,6 @@ String Relays::command(Command *command)
 	return str;	
 }
 
-uint8_t Relays::GetNum(Relay *relay)
-{
-	uint8_t i = 0;
-	for (link t = head; t != NULL; t = t->next) {
-		if(t->item == relay) return i;
-		i++;
-	}
-	
-	return 255;
-}
-
-Relay *Relays::GetByNum(uint8_t num)
-{
-	if(num >= count()) return NULL;
-	
-	
-	for (link t = head; t != NULL; t = t->next) {
-		if(!num)
-		{
-			return t->item;
-		}
-		num--;
-	}
-	
-	return 0;
-}
-
-Relay *Relays::GetByName(String name)
-{
-	for (link t = head; t != NULL; t = t->next) {
-		if(t->item->GetName() == name)
-		{
-			return t->item;
-		}
-	}
-	
-	return NULL;
-}
-
 String Relays::help()
 {
 	return "relay list | add <name> <pin> ?<st_on=1> | add shiftreg <name> <pin> ?<st_on=1> | remove <name> or <num> | <name> (?on|off)\n\r";

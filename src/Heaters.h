@@ -43,7 +43,7 @@ public:
 	void check();
 };
 
-class Heaters: public iSerializable, public List<Heater*>
+class Heaters: public iSerializable, public iListSearch<Heater*>
 {
 public:
 	static Heaters *instance;
@@ -52,8 +52,6 @@ public:
 	virtual void Deserialize();
 	String command(Command * command);
 	void Add(Heater *heater){push(heater);};
-	uint8_t GetNum(Heater *);
-	Heater *GetByName(String name);
 	String help();
 	void _check();
 	static void check(); //Sheduler every 1000ms (get temp from sensors)

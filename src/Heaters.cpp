@@ -252,29 +252,6 @@ String Heaters::command(Command * command)
 
 }
 
-uint8_t Heaters::GetNum(Heater *heater)
-{
-	uint8_t i = 0;
-	for (link t = head; t != NULL; t = t->next) {
-		if(t->item == heater) return i;
-		i++;
-	}
-	
-	return 255;
-}
-
-Heater *Heaters::GetByName(String name)
-{
-	for (link t = head; t != NULL; t = t->next) {
-		if(t->item->GetName() == name)
-		{
-			return t->item;
-		}
-	}
-	
-	return NULL;
-}
-
 String Heaters::help()
 {
 	return "heater list | add <name> <relay_name> <tempsensor_name> | remove <name> | <name> (on|off|set <temp>|set tsup <temp>) \n\r";

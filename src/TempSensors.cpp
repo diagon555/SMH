@@ -100,45 +100,6 @@ boolean TempSensors::Add(const uint8_t* d_address, String name)
 	this->push(new TempSensor(d_address, name));
 }
 
-uint8_t TempSensors::GetNum(TempSensor * sensor)
-{
-	uint8_t i = 0;
-	for (link t = head; t != NULL; t = t->next) {
-		if(t->item == sensor) return i;
-		i++;
-	}
-	
-	return 255;
-}
-
-TempSensor *TempSensors::GetByNum(uint8_t num)
-{
-	if(num >= count()) return NULL;
-	
-	
-	for (link t = head; t != NULL; t = t->next) {
-		if(!num)
-		{
-			return t->item;
-		}
-		num--;
-	}
-	
-	return 0;
-}
-
-TempSensor *TempSensors::GetByName(String name)
-{
-	for (link t = head; t != NULL; t = t->next) {
-		if(t->item->GetName() == name)
-		{
-			return t->item;
-		}
-	}
-	
-	return 0;
-}
-
 TempSensor *TempSensors::GetByAddress(const uint8_t* d_address)
 {
 	boolean match;

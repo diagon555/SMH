@@ -8,7 +8,6 @@
 
 #include "interfaces.h"
 #include "Commands.h"
-#include "List.h"
 
 #define TEMPERATURE_PRECISION 9
 #define MAX_ERROR_REQUEST 5
@@ -27,7 +26,7 @@ public:
 	float GetTemp();
 };
 
-class TempSensors: public List<TempSensor*>, public iSerializable
+class TempSensors: public iListSearch<TempSensor*>, public iSerializable
 {
 	// Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
 	OneWire *oneWire;
@@ -41,9 +40,6 @@ public:
 	virtual void Serialize();
 	virtual void Deserialize();
 	boolean Add(const uint8_t* d_address, String name);
-	uint8_t GetNum(TempSensor *);
-	TempSensor *GetByNum(uint8_t num);
-	TempSensor *GetByName(String name);
 	TempSensor *GetByAddress(const uint8_t* d_address);
 	String command(Command * command);
 	String help();
