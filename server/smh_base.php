@@ -23,4 +23,13 @@ function smh_create_socket($address, $port)
 	return $socket;
 }
 
+function shift_word(&$buf)
+{
+	$tokens = explode(" ", $buf);
+	$cmd = array_shift($tokens);
+	$buf = implode(" ", $tokens);
+	
+	return $cmd;
+}
+
 ?>
