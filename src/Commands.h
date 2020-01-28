@@ -1,8 +1,6 @@
 #ifndef COMMANDS_h
 #define COMMANDS_h
 
-#include <Arduino.h>
-
 class Command
 {
 	String command;
@@ -14,7 +12,7 @@ public:
 
 class Commands
 {
-	boolean serial_init;
+    bool serial_init;
 	String buff_serial;
 public:
 	Commands();

@@ -1,8 +1,6 @@
 /*
-  Mouse.h
-
-  Copyright (c) 2015, Arduino LLC
-  Original code (pre-library): Copyright (c) 2011, Peter Barrett
+  Printable.h - Interface class that allows printing of complex types
+  Copyright (c) 2011 Adrian McEwen.  All right reserved.
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -19,42 +17,24 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef SMH_h
-#define SMH_h
+#ifndef Printable_h
+#define Printable_h
 
+#include <stdlib.h>
 
-#include "../lib/WString.h"
-#include "../lib/Print.h"
+class Print;
 
-//#include "Schedule.h"
-//#include "Serializer.h"
-//#include "Commands.h"
-//#include "TempSensors.h"
-//#include "Relay.h"
-//#include "Heaters.h"
+/** The Printable class provides a way for new classes to allow themselves to be printed.
+    By deriving from Printable and implementing the printTo method, it will then be possible
+    for users to print out instances of this class by passing them into the usual
+    Print::print and Print::println methods.
+*/
 
-class SMHClass
+class Printable
 {
-private:
-	String logfile_path;
-	Print * printer;
-//	Commands * commands;
-//	Serializer * serializer;
-//	Schedulers * schedulers;
-
-public:
-	SMHClass();
-	void Start();
-
-// 	TempSensors * tempsensors;
-// 	Relays * relays;
-// 	Heaters * heaters;
-
-	void set_logfile_path(String);
-	void set_printer(Print *);
-	void loop(void);
+  public:
+    virtual size_t printTo(Print& p) const = 0;
 };
 
-extern SMHClass SMH;
-
 #endif
+
