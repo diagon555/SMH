@@ -20,9 +20,9 @@
 */
 
 #include "WString.h"
-#include <stdio.h>
-#include <stdlib.h>
-//#include "itoa.h"
+#include <cstdio>
+#include <cstdlib>
+#include "itoa.h"
 #include "avr/dtostrf.h"
 
 /*********************************************/
@@ -73,7 +73,7 @@ String::String(unsigned char value, unsigned char base)
 {
 	init();
 	char buf[9];
-    sprintf(buf, "%u", value);
+    utoa(value, buf, base);
 	*this = buf;
 }
 
@@ -89,7 +89,7 @@ String::String(unsigned int value, unsigned char base)
 {
 	init();
 	char buf[17];
-    sprintf(buf, "%u", value);
+    utoa(value, buf, base);
 	*this = buf;
 }
 
@@ -105,7 +105,7 @@ String::String(unsigned long value, unsigned char base)
 {
 	init();
 	char buf[33];
-    sprintf(buf, "%lu", value);
+    ultoa(value, buf, base);
 	*this = buf;
 }
 
@@ -306,7 +306,7 @@ unsigned char String::concat(int num)
 unsigned char String::concat(unsigned int num)
 {
 	char buf[11];
-    sprintf(buf, "%u", num);
+    utoa(num, buf, 10);
 	return concat(buf, strlen(buf));
 }
 
@@ -320,7 +320,7 @@ unsigned char String::concat(long num)
 unsigned char String::concat(unsigned long num)
 {
 	char buf[11];
-    sprintf(buf, "%lu", num);
+    utoa(num, buf, 10);
 	return concat(buf, strlen(buf));
 }
 

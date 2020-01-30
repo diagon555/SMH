@@ -28,7 +28,7 @@
 
 //#include "Schedule.h"
 //#include "Serializer.h"
-//#include "Commands.h"
+#include "Commands.h"
 //#include "TempSensors.h"
 //#include "Relay.h"
 //#include "Heaters.h"
@@ -38,7 +38,7 @@ class SMHClass
 private:
 	String logfile_path;
 	Print * printer;
-//	Commands * commands;
+	Commands * commands;
 //	Serializer * serializer;
 //	Schedulers * schedulers;
 

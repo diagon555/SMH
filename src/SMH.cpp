@@ -11,7 +11,7 @@ SMHClass::SMHClass()
 
 //	serializer = new Serializer();
 //	schedulers = new Schedulers();
-//	commands = new Commands();
+	commands = new Commands();
 //
 //
 //	tempsensors = new TempSensors(ONEWIREPIN);

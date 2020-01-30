@@ -1,5 +1,11 @@
+#include <assert.h>
+#include <pthread.h>
+#include <unistd.h>
 #include "SMH.h"
 #include "Commands.h"
+#include "USART.h"
+
+extern USART Serial;
 
 Command::Command(String cmd)
 {
@@ -26,11 +32,42 @@ String Command::Next()
 	return cmd;
 }
 
+void* PosixThreadCheckCommand(void* data)
+{
+    // Do some work here.
+    while (1)
+    {
+        ((Commands *)data)->check_serial();
+        usleep(10);
+    }
+
+    return NULL;
+}
+
 //Commands
 Commands::Commands()
 {
 	serial_init = false;
 	buff_serial.reserve(255);
+// Create the thread using POSIX routines.
+    pthread_attr_t  attr;
+    pthread_t       posixThreadID;
+    int             returnVal;
+
+    returnVal = pthread_attr_init(&attr);
+    assert(!returnVal);
+    returnVal = pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+    assert(!returnVal);
+
+    int     threadError = pthread_create(&posixThreadID, &attr, &PosixThreadCheckCommand, this);
+
+    returnVal = pthread_attr_destroy(&attr);
+    assert(!returnVal);
+    if (threadError != 0)
+    {
+        Serial.println("Cannot start commands thread");
+    }
+
 }
 
 void Commands::check()
@@ -70,15 +107,17 @@ void Commands::check_serial()
 
             String cmd = command.Next();
 
-            if(cmd == "relay") {
-                Serial.println(SMH.relays->command(&command));
-            } else if(cmd == "tempsensors" or cmd == "tsens") {
-                Serial.println(SMH.tempsensors->command(&command));
-            } else if(cmd == "heat" or cmd == "heater" or cmd == "heaters") {
-                Serial.println(SMH.heaters->command(&command));
-            } else if(cmd == "ms") {
-                Serial.println(millis());
-            } else {
+//            if(cmd == "relay") {
+//                Serial.println(SMH.relays->command(&command));
+//            } else if(cmd == "tempsensors" or cmd == "tsens") {
+//                Serial.println(SMH.tempsensors->command(&command));
+//            } else if(cmd == "heat" or cmd == "heater" or cmd == "heaters") {
+//                Serial.println(SMH.heaters->command(&command));
+//            } else if(cmd == "ms") {
+//                Serial.println(millis());
+//            } else {
+            if(1)
+            {
                 Serial.println("SMH 1.0.0");
                 Serial.println("Command list:");
                 Serial.println("relay tempsensors heater ms help");
@@ -94,9 +133,6 @@ void Commands::check_serial()
                 buff_serial.remove(buff_serial.length()-1);
                 Serial.print(ch);
             }
-        }
-        else if(ch > 255) {
-            ;//nothing
         }
         else {
             buff_serial += ch;
